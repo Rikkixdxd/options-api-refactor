@@ -1,6 +1,5 @@
 <template>
   <div class="user-table-container">
-
     <!-- Хедер с действиями -->
     <UserTableHeader 
       @delete-selected-users="deleteSelectedUsers"
@@ -77,7 +76,7 @@
       v-if="showAddUserModal"
       @close="closeAddUserModal"
       @validate-new-user-name="validateNewUserName"
-      @validate-new-user-email="validateNewUserEmail($event, users)"
+      @validate-new-user-email="validateNewUserEmail"
       @add-new-user="handleAddNewUser"
       :new-user="newUser"
       :new-user-errors="newUserErrors"
@@ -103,13 +102,12 @@ import { usePagination } from '@/composables/usePagination';
 import { useUtility } from '@/composables/useUtility';
 import { useUserSort } from '@/composables/useUserSort';
 import type { User } from '@/types/user';
-import UserTableFilters from './UserTable/UserTableFilters.vue';
-import UserTableHeader from './UserTable/UserTableHeader.vue';
-import UserTableBody from './UserTable/UserTableBody.vue';
-import UserTablePagination from './UserTable/UserTablePagination.vue';
-import UserTableAddModal from './UserTable/UserTableAddModal.vue';
-import UserTableDetailsModal from './UserTable/UserTableDetailsModal.vue';
-import { useValidate } from '@/composables/useValidate';
+import UserTableFilters from './UserTableFilters.vue';
+import UserTableHeader from './UserTableHeader.vue';
+import UserTableBody from './UserTableBody.vue';
+import UserTablePagination from './UserTablePagination.vue';
+import UserTableAddModal from './UserTableAddModal.vue';
+import UserTableDetailsModal from './UserTableDetailsModal.vue';
 
 const handleAddNewUser = async () => {
   await addNewUser()
@@ -249,6 +247,9 @@ const {
   deleteSelectedUsers,
   deleteUser,
   toggleUserStatus,
+  validateEmail,
+  validateNewUserEmail,
+  validateNewUserName,
   editForm,
   editingUserId,
   isNewUserValid,
@@ -261,16 +262,12 @@ const {
 
 const {
   formatDate,
-  formatRelativeTime,
-  getActivityClass,
-  getDefaultAvatar,
   getRoleLabel,
 } = useUtility()
 
 const {
   clearAllFilters,
   clearDateFilter,
-  dateFilteredUsers,
   dateFrom,
   dateTo,
   filterRole,
@@ -297,11 +294,6 @@ const {
   totalPages,
   visiblePages,
 } = usePagination(sortedUsers, pageSize, selectedUsers)
-
-const {
-  validateNewUserEmail,
-  validateNewUserName,
-} = useValidate()
 
 watch(
   () => [searchQuery.value, filterRole.value, filterStatus.value, dateFrom.value, dateTo.value, pageSize.value],

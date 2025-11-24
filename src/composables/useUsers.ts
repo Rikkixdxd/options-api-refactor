@@ -1,10 +1,8 @@
 import type { EditForm, NewUser, User, UserRoles, UserStatus } from "@/types/user"
 import { computed, ref, type Ref } from "vue"
 import { useUtility } from "./useUtility"
-import { useValidate } from "./useValidate"
 
 const { generateMockUsers } = useUtility()
-const { validateEmail,validateNewUserEmail,validateNewUserName } = useValidate()
 
 export function useUsers(selectedUsers: Ref<number[]>) {
 
@@ -164,8 +162,8 @@ export function useUsers(selectedUsers: Ref<number[]>) {
     
 
     const addNewUser = async () => {
-        newUserErrors.value.name = validateNewUserName(newUser.value.name)
-        newUser.value.email = validateNewUserEmail(newUser.value.email, users.value)
+        validateNewUserName()
+        validateNewUserEmail()
 
         if (!isNewUserValid.value) {
             return
@@ -219,6 +217,33 @@ export function useUsers(selectedUsers: Ref<number[]>) {
       }
     }
 
+    const validateNewUserName = () => {
+        if (newUser.value.name.trim().length === 0) {
+            newUserErrors.value.name =  'Имя обязательно для заполнения';
+        } else if (newUser.value.name.trim().length < 3) {
+            newUserErrors.value.name =  'Имя должно содержать минимум 3 символа';
+        } else {
+            newUserErrors.value.name =  '';
+        }
+    }
+
+    const validateNewUserEmail = () => {
+        if (newUser.value.email.trim().length === 0) {
+            newUserErrors.value.email = 'Email обязателен для заполнения';
+        } else if (!validateEmail(newUser.value.email)) {
+            newUserErrors.value.email = 'Некорректный формат email';
+        } else if (users.value.some(u => u.email === newUser.value.email)) {
+            newUserErrors.value.email = 'Пользователь с таким email уже существует';
+        } else {
+            newUserErrors.value.email = '';
+        }
+    }
+
+    const validateEmail = (email: string) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
     return {
         users,
         busy,
@@ -238,5 +263,8 @@ export function useUsers(selectedUsers: Ref<number[]>) {
         generateMockUsers,
         addNewUser,
         loadUsers,
+        validateEmail,
+        validateNewUserEmail,
+        validateNewUserName
     }
 }

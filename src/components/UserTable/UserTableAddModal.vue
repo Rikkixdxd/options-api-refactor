@@ -5,7 +5,6 @@
           <h3>Добавить нового пользователя</h3>
           <button @click="emit('close')" class="btn-close">✕</button>
         </div>
-        
         <div class="modal-body">
           <div class="form-group">
             <label>Имя*</label>
@@ -13,7 +12,7 @@
               v-model="newUser.name"
               type="text"
               :class="{ error: newUserErrors.name }"
-              @input="emit('validate-new-user-name', newUser.name)"
+              @input="emit('validate-new-user-name')"
             />
             <span v-if="newUserErrors.name" class="error-text">
               {{ newUserErrors.name }}
@@ -26,7 +25,7 @@
               v-model="newUser.email"
               type="email"
               :class="{ error: newUserErrors.email }"
-              @input="emit('validate-new-user-email', newUser.email)"
+              @input="emit('validate-new-user-email')"
             />
             <span v-if="newUserErrors.email" class="error-text">
               {{ newUserErrors.email }}
@@ -97,8 +96,8 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   'close': [value: void]
-  'validate-new-user-name': [value: string]
-  'validate-new-user-email': [value: string]
+  'validate-new-user-name': [value: void]
+  'validate-new-user-email': [value: void]
   'add-new-user': [value: void]
 }>()
 </script>
